@@ -73,7 +73,7 @@ pub fn build_annotations_layout(annotations: &[Annotation]) -> ScrollView<Linear
     if annotations.len() == 0 {
         LinearLayout::vertical()
             .child(TextView::new("You have not registered any annotation!"))
-            .child(TextView::new("Try: annotate [text]").center())
+            .child(TextView::new("Try: jotspot [text]").center())
             .scrollable()
     } else {
         annotations
