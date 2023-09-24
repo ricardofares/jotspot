@@ -1,8 +1,8 @@
-<p align="center"><img src="https://i.imgur.com/Z2X2Ryk.png"></p>
+<p align="center"><img src="https://i.imgur.com/Qv49B0b.png"></p>
 
-# Annotate - Text Annotation Tool
+# Jotspot - Text Annotation Tool
 
-Annotate is a simple text annotation tool that allows you to create and manage text annotations with timestamps. Whether you want to jot down quick notes, timestamps for important events, or simply annotate text for future reference, Annotate has got you covered.
+Jotspot is a simple text annotation tool that allows you to create and manage text annotations with timestamps. Whether you want to jot down quick notes, timestamps for important events, or simply annotate text for future reference, Jotspot has got you covered.
 
 ## Features
 
@@ -11,7 +11,7 @@ Annotate is a simple text annotation tool that allows you to create and manage t
 - **User-Friendly Interface:** An intuitive and user-friendly text-based interface for annotation management.
 - **List Annotations:** View and manage your annotations conveniently.
 - **Customizable:** Customize your annotation text as you like it.
-- **Timestamp Formatting:** Annotate provides user-friendly timestamp formatting like "X seconds ago," making it easy to understand when an annotation was created.
+- **Timestamp Formatting:** Jotspot provides user-friendly timestamp formatting like "X seconds ago," making it easy to understand when an annotation was created.
 
 ## Getting Started
 
@@ -24,16 +24,16 @@ Before you get started, ensure you have the following installed:
 
 ### Installation
 
-1. Clone the "annotate" repository to your local machine:
+1. Clone the "jotspot" repository to your local machine:
 
    ```bash
-   git clone https://github.com/ricardofares/annotate.git
+   git clone https://github.com/ricardofares/jotspot.git
    ```
 
-2. Change to the "annotate" project directory:
+2. Change to the "jotspot" project directory:
 
    ```bash
-   cd annotate
+   cd jotspot
    ```
    
 3. Build the project:
@@ -46,23 +46,23 @@ Before you get started, ensure you have the following installed:
 
 ## Usage
 
-Use the annotate command followed by your text to create a new annotation. For example:
+Use the jotspot command followed by your text to create a new annotation. For example:
   
   ```bash
-  ./annotate "This is my first annotation."
+  ./jotspot "This is my first annotation."
   ```
 
-Run annotate without arguments to enter the interactive annotation interface:
+Run jotspot without arguments to enter the interactive annotation interface:
 
   ```bash
-  ./annotate
+  ./jotspot
   ```
 
 Use the interactive interface to view and manage your annotations.
 
 ## Contributing
 
-Contributions are welcome! If you want to contribute to Annotate, please follow these steps:
+Contributions are welcome! If you want to contribute to Jotspot, please follow these steps:
 
  1. Fork the repository.
  2. Create a new branch for your feature or bug fix.
