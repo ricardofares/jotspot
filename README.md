@@ -27,7 +27,7 @@ Before you get started, ensure you have the following installed:
 1. Clone the "annotate" repository to your local machine:
 
    ```bash
-   git clone https://github.com/yourusername/annotate.git
+   git clone https://github.com/ricardofares/annotate.git
    ```
 
 2. Change to the "annotate" project directory:
