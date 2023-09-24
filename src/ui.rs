@@ -1,12 +1,12 @@
 use crate::annotation::Annotation;
 
 use cursive::view::Scrollable;
-use cursive::views::{Dialog, LinearLayout, ScrollView, TextView};
+use cursive::views::{Dialog, LinearLayout, SelectView, TextView};
 
-/// Builds a text layout for displaying an `Annotation`.
+/// Creates a well-formatted string suitable for presentation within the annotation layout.
 ///
-/// This function creates a `LinearLayout` that represents the formatted text of an `Annotation`.
-/// The layout consists of two elements:
+/// This function creates a [`String`] that represents the formatted text of an [`Annotation`].
+/// The string consists of two elements:
 ///
 /// 1. A timestamp indicating when the annotation was created, formatted as a human-readable string,
 ///    followed by a separator.
@@ -15,12 +15,12 @@ use cursive::views::{Dialog, LinearLayout, ScrollView, TextView};
 ///
 /// # Arguments
 ///
-/// - `annotation`: A reference to the `Annotation` instance that contains the timestamp and content
+/// - `annotation`: A reference to the [`Annotation`] instance that contains the timestamp and content
 ///   to be displayed.
 ///
 /// # Returns
 ///
-/// - A `LinearLayout` containing the formatted text elements.
+/// - A [`String`] containing the formatted text elements.
 ///
 /// # Examples
 ///
@@ -30,28 +30,32 @@ use cursive::views::{Dialog, LinearLayout, ScrollView, TextView};
 ///     created_at: 1632172800000, // Timestamp in milliseconds
 /// };
 ///
-/// let annotation_layout = build_annotation_text(&annotation);
+/// let annotation_text = build_annotation_text(&annotation);
 /// ```
-pub fn build_annotation_text(annotation: &Annotation) -> LinearLayout {
-    LinearLayout::horizontal()
-        .child(TextView::new(format!("{:>14} | ", annotation.format_created_at())))
-        .child(TextView::new(annotation.content.clone()))
+pub fn build_annotation_text(annotation: &Annotation) -> String {
+    format!(
+        "{:>14} | {}",
+        annotation.format_created_at(),
+        annotation.content
+    )
 }
 
-/// Builds a scrollable layout for displaying a list of annotations.
+/// Builds the annotation layout for displaying a list of annotations.
 ///
-/// This function creates a scrollable view that presents a list of annotations in a user-friendly
-/// format. The layout includes a message for when there are no annotations, and for each annotation
-/// in the list, it includes a formatted text layout created using the `build_annotation_text` function.
+/// This function creates a dialog containing a scrollable view that presents a list of annotations
+/// in a user-friendly format. The layout includes a message for when there are no annotations, and
+/// for each annotation in the list, it includes a formatted text layout created using the
+/// [`build_annotation_text`] function.
 ///
 /// # Arguments
 ///
-/// - `annotations`: A reference to a slice of `Annotation` instances representing the list of
+/// - `annotations`: A reference to a slice of [`Annotation`] instances representing the list of
 ///   annotations to be displayed.
 ///
 /// # Returns
 ///
-/// - A `ScrollView<LinearLayout>` containing the formatted annotations and optional messages.
+/// - A [`Dialog`] containing a `ScrollView<LinearLayout>` which further contains the formatted
+///   annotations and optional messages.
 ///
 /// # Examples
 ///
@@ -69,19 +73,25 @@ pub fn build_annotation_text(annotation: &Annotation) -> LinearLayout {
 ///
 /// let annotations_layout = build_annotations_layout(&annotations);
 /// ```
-pub fn build_annotations_layout(annotations: &[Annotation]) -> ScrollView<LinearLayout> {
+pub fn build_annotations_layout(annotations: &[Annotation]) -> Dialog {
     if annotations.len() == 0 {
-        LinearLayout::vertical()
-            .child(TextView::new("You have not registered any annotation!"))
-            .child(TextView::new("Try: jotspot [text]").center())
-            .scrollable()
+        Dialog::around(
+            LinearLayout::vertical()
+                .child(TextView::new("You have not registered any annotation!"))
+                .child(TextView::new("Try: jotspot [text]").center())
+                .scrollable(),
+        )
+        .title("Annotations")
     } else {
-        annotations
-            .iter()
-            .fold(LinearLayout::vertical(), |layout, annotation| {
-                layout.child(build_annotation_text(annotation))
-            })
-            .scrollable()
+        Dialog::around(
+            annotations
+                .iter()
+                .fold(SelectView::new(), |select_view, annotation| {
+                    select_view.item_str(build_annotation_text(annotation))
+                })
+                .scrollable(),
+        )
+        .title("Annotations")
     }
 }
 
@@ -93,7 +103,7 @@ pub fn build_annotations_layout(annotations: &[Annotation]) -> ScrollView<Linear
 ///
 /// # Arguments
 ///
-/// - `annotations`: A vector of `Annotation` instances representing the list of annotations to be displayed
+/// - `annotations`: A vector of [`Annotation`] instances representing the list of annotations to be displayed
 ///   and interacted with in the TUI.
 ///
 /// # Examples
@@ -115,6 +125,6 @@ pub fn build_annotations_layout(annotations: &[Annotation]) -> ScrollView<Linear
 pub fn run_annotate_tui(annotations: Vec<Annotation>) {
     let mut siv = cursive::default();
 
-    siv.add_layer(Dialog::around(build_annotations_layout(&annotations)).title("Annotations"));
+    siv.add_layer(build_annotations_layout(&annotations));
     siv.run();
 }
