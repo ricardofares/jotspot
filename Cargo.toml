@@ -1,9 +1,14 @@
 [package]
-name = "annotate"
-version = "0.0.1-alpha"
+name = "jotspot"
+authors = ["ricardofares"]
+categories = ["command-line-interface", "gui"]
+description = "A versatile text-based user interface (TUI) tool designed to simplify the annotation process"
+version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+keywords = ["ncurses", "TUI", "UI", "annotation", "jot", "notes"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/ricardofares/jotspot/"
 
 [dependencies]
 cursive = "0.20.0"
