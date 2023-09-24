@@ -34,7 +34,7 @@ use cursive::views::{Dialog, LinearLayout, ScrollView, TextView};
 /// ```
 pub fn build_annotation_text(annotation: &Annotation) -> LinearLayout {
     LinearLayout::horizontal()
-        .child(TextView::new(annotation.format_created_at() + " | "))
+        .child(TextView::new(format!("{:>14} | ", annotation.format_created_at())))
         .child(TextView::new(annotation.content.clone()))
 }
 
