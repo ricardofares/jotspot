@@ -5,6 +5,32 @@ use std::fs::{File, OpenOptions};
 use std::io::{self, BufRead, BufReader, Write};
 use std::time::{SystemTime, UNIX_EPOCH};
 
+/// Get the annotations metadata file path.
+///
+/// This function retrieves the home directory path of the current user and appends the
+/// ".annotations" file name to it, forming the complete file path for storing annotations.
+///
+/// # Returns
+///
+/// A `String` containing the complete file path for the annotations metadata file, including the
+/// home directory and the filename.
+///
+/// # Panics
+///
+/// This function may panic if it fails to retrieve the home directory path. In a typical
+/// Unix-like environment, the "HOME" environment variable is expected to be set.
+///
+/// # Examples
+///
+/// ```
+/// let filename = get_annotations_filename();
+/// println!("Annotations file path: {}", filename);
+/// ```
+///
+/// # Note
+///
+/// - This function is designed to provide a standardized file path for the annotations file,
+///   assuming that it should be stored in the user's home directory with the filename ".annotations".
 pub fn get_annotations_filename() -> String {
     let homedir_path = env::var("HOME").expect("Failed to get the home directory");
     format!("{}/.annotations", homedir_path)
