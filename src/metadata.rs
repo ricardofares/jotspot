@@ -1,7 +1,7 @@
 use crate::annotation::Annotation;
 
 use std::env;
-use std::fs::{File, OpenOptions};
+use std::fs::OpenOptions;
 use std::io::{self, BufRead, BufReader, Write};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -74,6 +74,7 @@ pub fn get_annotations_filename() -> String {
 ///   standard error stream.
 pub fn annotate(content: String) {
     let mut file = OpenOptions::new()
+        .create(true)
         .append(true)
         .open(get_annotations_filename())
         .unwrap();
@@ -180,16 +181,16 @@ pub fn read_annotations() -> Vec<Annotation> {
 ///
 /// - If the annotations file is not found, it will create an empty file and return an empty `Vec<String>`.
 pub fn read_annotations_file() -> Result<Vec<String>, io::Error> {
-    let annotations_filename = get_annotations_filename();
-
-    match File::open(&annotations_filename) {
+    match OpenOptions::new()
+        .create(true)
+        .write(true)
+        .read(true)
+        .open(get_annotations_filename())
+    {
         Ok(file) => {
             let lines: Result<Vec<String>, io::Error> = BufReader::new(file).lines().collect();
             Ok(lines?)
         }
-        _ => {
-            File::create(&annotations_filename)?;
-            Ok(Vec::<String>::new())
-        }
+        _ => Ok(Vec::<String>::new()),
     }
 }
