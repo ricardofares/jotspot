@@ -1,9 +1,5 @@
 mod annotation;
-
-use annotation::Annotation;
-
-use cursive::view::Scrollable;
-use cursive::views::{Dialog, LinearLayout, ScrollView, TextView};
+mod ui;
 
 use std::convert::From;
 use std::env;
@@ -26,13 +22,13 @@ fn read_annotations_file() -> Result<Vec<String>, io::Error> {
     }
 }
 
-fn read_annotations() -> Vec<Annotation> {
+fn read_annotations() -> Vec<annotation::Annotation> {
     let annotations_result = read_annotations_file();
 
     match annotations_result {
         Ok(lines) => lines
             .iter()
-            .map(|annotation_str| Annotation::from(annotation_str))
+            .map(|annotation_str| annotation::Annotation::from(annotation_str))
             .collect(),
         Err(err) => {
             panic!(
@@ -42,29 +38,6 @@ fn read_annotations() -> Vec<Annotation> {
         }
     }
 }
-
-fn build_annotation_text(annotation: &Annotation) -> LinearLayout {
-    LinearLayout::horizontal()
-        .child(TextView::new(annotation.format_created_at() + " | "))
-        .child(TextView::new(annotation.content.clone()))
-}
-
-fn build_annotations_layout(annotations: &[Annotation]) -> ScrollView<LinearLayout> {
-    if annotations.len() == 0 {
-        LinearLayout::vertical()
-            .child(TextView::new("You have not registered any annotation!"))
-            .child(TextView::new("Try: annotate [text]").center())
-            .scrollable()
-    } else {
-        annotations
-            .iter()
-            .fold(LinearLayout::vertical(), |layout, annotation| {
-                layout.child(build_annotation_text(annotation))
-            })
-            .scrollable()
-    }
-}
-
 fn annotate(content: String) {
     let mut file = OpenOptions::new()
         .append(true)
@@ -81,19 +54,11 @@ fn annotate(content: String) {
     }
 }
 
-fn run_annotate_tui() {
-    let annotations = read_annotations();
-    let mut siv = cursive::default();
-
-    siv.add_layer(Dialog::around(build_annotations_layout(&annotations)).title("Annotations"));
-    siv.run();
-}
-
 fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
 
     if args.len() == 0 {
-        run_annotate_tui();
+        ui::run_annotate_tui(read_annotations());
     } else {
         annotate(args.join(" "));
     }
