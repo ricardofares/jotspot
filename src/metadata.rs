@@ -1,10 +1,14 @@
 use crate::annotation::Annotation;
 
+use std::env;
 use std::fs::{File, OpenOptions};
 use std::io::{self, BufRead, BufReader, Write};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-const ANNOTATIONS_FILENAME: &str = ".annotations";
+pub fn get_annotations_filename() -> String {
+    let homedir_path = env::var("HOME").expect("Failed to get the home directory");
+    format!("{}/.annotations", homedir_path)
+}
 
 /// Appends a new annotation to the metadata file with a timestamp and content.
 ///
@@ -45,7 +49,7 @@ const ANNOTATIONS_FILENAME: &str = ".annotations";
 pub fn annotate(content: String) {
     let mut file = OpenOptions::new()
         .append(true)
-        .open(ANNOTATIONS_FILENAME)
+        .open(get_annotations_filename())
         .unwrap();
 
     let created_at = SystemTime::now()
@@ -110,7 +114,8 @@ pub fn read_annotations() -> Vec<Annotation> {
         Err(err) => {
             panic!(
                 "Annotations file {} could not be read: {}",
-                ANNOTATIONS_FILENAME, err
+                get_annotations_filename(),
+                err
             );
         }
     }
@@ -149,13 +154,15 @@ pub fn read_annotations() -> Vec<Annotation> {
 ///
 /// - If the annotations file is not found, it will create an empty file and return an empty `Vec<String>`.
 pub fn read_annotations_file() -> Result<Vec<String>, io::Error> {
-    match File::open(ANNOTATIONS_FILENAME) {
+    let annotations_filename = get_annotations_filename();
+
+    match File::open(&annotations_filename) {
         Ok(file) => {
             let lines: Result<Vec<String>, io::Error> = BufReader::new(file).lines().collect();
             Ok(lines?)
         }
         _ => {
-            File::create(ANNOTATIONS_FILENAME)?;
+            File::create(&annotations_filename)?;
             Ok(Vec::<String>::new())
         }
     }
