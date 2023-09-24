@@ -1,3 +1,5 @@
+<p align="center"><img src="https://i.imgur.com/Z2X2Ryk.png"></p>
+
 # Annotate - Text Annotation Tool
 
 Annotate is a simple text annotation tool that allows you to create and manage text annotations with timestamps. Whether you want to jot down quick notes, timestamps for important events, or simply annotate text for future reference, Annotate has got you covered.
