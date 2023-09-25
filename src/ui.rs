@@ -24,7 +24,7 @@ use cursive::views::{Dialog, LinearLayout, SelectView, TextView};
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// let annotation = Annotation {
 ///     content: "This is an example annotation.".to_string(),
 ///     created_at: 1632172800000, // Timestamp in milliseconds
@@ -59,7 +59,7 @@ pub fn build_annotation_text(annotation: &Annotation) -> String {
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// let annotations: Vec<Annotation> = vec![
 ///     Annotation {
 ///         content: "This is an example annotation 1.".to_string(),
@@ -74,7 +74,7 @@ pub fn build_annotation_text(annotation: &Annotation) -> String {
 /// let annotations_layout = build_annotations_layout(&annotations);
 /// ```
 pub fn build_annotations_layout(annotations: &[Annotation]) -> Dialog {
-    if annotations.len() == 0 {
+    if annotations.is_empty() {
         Dialog::around(
             LinearLayout::vertical()
                 .child(TextView::new("You have not registered any annotation!"))
@@ -83,15 +83,10 @@ pub fn build_annotations_layout(annotations: &[Annotation]) -> Dialog {
         )
         .title("Annotations")
     } else {
-        Dialog::around(
-            annotations
-                .iter()
-                .fold(SelectView::new(), |select_view, annotation| {
-                    select_view.item_str(build_annotation_text(annotation))
-                })
-                .scrollable(),
-        )
-        .title("Annotations")
+        let select_view = annotations.iter().fold(SelectView::new(), |select_view, annotation| {
+            select_view.item_str(build_annotation_text(annotation))
+        });
+        Dialog::around(select_view.scrollable()).title("Annotations")
     }
 }
 
@@ -108,7 +103,7 @@ pub fn build_annotations_layout(annotations: &[Annotation]) -> Dialog {
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// let annotations: Vec<Annotation> = vec![
 ///     Annotation {
 ///         content: "This is an example annotation 1.".to_string(),

@@ -1,8 +1,9 @@
 use crate::annotation::Annotation;
 
 use std::env;
-use std::fs::OpenOptions;
+use std::fs::{self, OpenOptions};
 use std::io::{self, BufRead, BufReader, Write};
+use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Get the annotations metadata file path.
@@ -12,7 +13,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 ///
 /// # Returns
 ///
-/// A `String` containing the complete file path for the annotations metadata file, including the
+/// A `PathBuf` containing the complete file path for the annotations metadata file, including the
 /// home directory and the filename.
 ///
 /// # Panics
@@ -22,18 +23,18 @@ use std::time::{SystemTime, UNIX_EPOCH};
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// let filename = get_annotations_filename();
-/// println!("Annotations file path: {}", filename);
+/// println!("Annotations file path: {}", filename.display());
 /// ```
 ///
 /// # Note
 ///
 /// - This function is designed to provide a standardized file path for the annotations file,
 ///   assuming that it should be stored in the user's home directory with the filename ".annotations".
-pub fn get_annotations_filename() -> String {
+pub fn get_annotations_filename() -> PathBuf {
     let homedir_path = env::var("HOME").expect("Failed to get the home directory");
-    format!("{}/.annotations", homedir_path)
+    PathBuf::from(homedir_path).join(".annotations")
 }
 
 /// Appends a new annotation to the metadata file with a timestamp and content.
@@ -48,9 +49,9 @@ pub fn get_annotations_filename() -> String {
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// let content = "This is a new annotation.";
-/// annotate(content.to_string());
+/// annotate(&content);
 /// ```
 ///
 /// # Note
@@ -58,7 +59,7 @@ pub fn get_annotations_filename() -> String {
 /// - This function is designed to add new annotations to the metadata file in a specific format, where each line
 ///   represents an annotation entry. The format is as follows:
 ///
-///   ```
+///   ```text
 ///   <TIMESTAMP> <CONTENT>
 ///   ```
 ///
@@ -72,21 +73,19 @@ pub fn get_annotations_filename() -> String {
 ///
 /// - If the operation fails (e.g., due to file I/O issues), an error message is printed to the
 ///   standard error stream.
-pub fn annotate(content: String) {
+pub fn annotate(content: &str) -> io::Result<()> {
     let mut file = OpenOptions::new()
         .create(true)
         .append(true)
-        .open(get_annotations_filename())
-        .unwrap();
+        .open(get_annotations_filename())?;
 
     let created_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("Invalid system time!")
         .as_millis();
 
-    if let Err(e) = writeln!(file, "{} {}", created_at, content) {
-        eprintln!("Annotation failed: {}", e);
-    }
+    writeln!(file, "{} {}", created_at, content)?;
+    Ok(())
 }
 
 /// Reads and parses annotations from the metadata file into a vector of `Annotation` instances.
@@ -107,8 +106,8 @@ pub fn annotate(content: String) {
 ///
 /// # Examples
 ///
-/// ```
-/// let annotations = read_annotations();
+/// ```rust
+/// let annotations = read_annotations().expect("Failed to read annotations");
 /// for annotation in &annotations {
 ///     println!("Timestamp: {}, Content: {}", annotation.created_at, annotation.content);
 /// }
@@ -119,7 +118,7 @@ pub fn annotate(content: String) {
 /// - This function is designed to read and parse annotations from a file where each line follows
 ///   the specified format:
 ///
-///   ```
+///   ```text
 ///   <TIMESTAMP> <CONTENT>
 ///   ```
 ///
@@ -130,22 +129,13 @@ pub fn annotate(content: String) {
 ///
 /// - If the annotations file is not found, empty, or contains entries in an invalid format, the function
 ///   will panic with an error message.
-pub fn read_annotations() -> Vec<Annotation> {
-    let annotations_result = read_annotations_file();
-
-    match annotations_result {
-        Ok(lines) => lines
-            .iter()
-            .map(|annotation_str| Annotation::from(annotation_str))
-            .collect(),
-        Err(err) => {
-            panic!(
-                "Annotations file {} could not be read: {}",
-                get_annotations_filename(),
-                err
-            );
-        }
-    }
+pub fn read_annotations() -> io::Result<Vec<Annotation>> {
+    let lines = fs::read_to_string(get_annotations_filename())?;
+    let annotations = lines
+        .lines()
+        .map(|line| Annotation::from(line))
+        .collect();
+    Ok(annotations)
 }
 
 /// Reads and collects lines from an annotations file.
@@ -161,7 +151,7 @@ pub fn read_annotations() -> Vec<Annotation> {
 ///
 /// # Examples
 ///
-/// ```
+/// ```rust
 /// match read_annotations_file() {
 ///     Ok(lines) => {
 ///         for line in lines {
@@ -180,17 +170,13 @@ pub fn read_annotations() -> Vec<Annotation> {
 ///   as a `Result<Vec<String>, io::Error>`.
 ///
 /// - If the annotations file is not found, it will create an empty file and return an empty `Vec<String>`.
-pub fn read_annotations_file() -> Result<Vec<String>, io::Error> {
-    match OpenOptions::new()
+pub fn read_annotations_file() -> io::Result<Vec<String>> {
+    let file = OpenOptions::new()
         .create(true)
         .write(true)
         .read(true)
-        .open(get_annotations_filename())
-    {
-        Ok(file) => {
-            let lines: Result<Vec<String>, io::Error> = BufReader::new(file).lines().collect();
-            Ok(lines?)
-        }
-        _ => Ok(Vec::<String>::new()),
-    }
+        .open(get_annotations_filename())?;
+
+    let lines: Vec<String> = BufReader::new(file).lines().collect();
+    Ok(lines)
 }
