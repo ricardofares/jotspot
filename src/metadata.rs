@@ -2,7 +2,7 @@ use crate::annotation::Annotation;
 
 use std::env;
 use std::fs::{self, OpenOptions};
-use std::io::{self, BufRead, BufReader, Write};
+use std::io::{self, BufRead, BufReader, Read, Write};
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -130,53 +130,16 @@ pub fn annotate(content: &str) -> io::Result<()> {
 /// - If the annotations file is not found, empty, or contains entries in an invalid format, the function
 ///   will panic with an error message.
 pub fn read_annotations() -> io::Result<Vec<Annotation>> {
-    let lines = fs::read_to_string(get_annotations_filename())?;
-    let annotations = lines
-        .lines()
-        .map(|line| Annotation::from(line))
-        .collect();
-    Ok(annotations)
-}
+    let mut lines = String::from("");
 
-/// Reads and collects lines from an annotations file.
-///
-/// This function is responsible for opening and reading an annotations file, collecting its lines,
-/// and returning them as a `Result<Vec<String>, io::Error>`. If the file is not found or cannot
-/// be opened, the function will return an error.
-///
-/// # Returns
-///
-/// - A `Result` containing either a `Vec<String>` with lines from the file or an `io::Error` in case
-///   of file I/O issues.
-///
-/// # Examples
-///
-/// ```rust
-/// match read_annotations_file() {
-///     Ok(lines) => {
-///         for line in lines {
-///             println!("{}", line);
-///         }
-///     }
-///     Err(e) => {
-///         eprintln!("Error reading annotations file: {}", e);
-///     }
-/// }
-/// ```
-///
-/// # Note
-///
-/// - This function is designed to read and collect lines from an annotations file. It returns the lines
-///   as a `Result<Vec<String>, io::Error>`.
-///
-/// - If the annotations file is not found, it will create an empty file and return an empty `Vec<String>`.
-pub fn read_annotations_file() -> io::Result<Vec<String>> {
-    let file = OpenOptions::new()
+    OpenOptions::new()
         .create(true)
         .write(true)
         .read(true)
-        .open(get_annotations_filename())?;
+        .open(get_annotations_filename())?
+        .read_to_string(&mut lines)?;
 
-    let lines: Result<Vec<String>, io::Error> = BufReader::new(file).lines().collect();
-    Ok(lines?)
+    let annotations = lines.lines().map(|line| Annotation::from(line)).collect();
+
+    Ok(annotations)
 }
