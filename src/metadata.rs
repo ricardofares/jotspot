@@ -1,8 +1,8 @@
 use crate::annotation::Annotation;
 
 use std::env;
-use std::fs::{self, OpenOptions};
-use std::io::{self, BufRead, BufReader, Read, Write};
+use std::fs::OpenOptions;
+use std::io::{self, Read, Write};
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 

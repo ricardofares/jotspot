@@ -13,6 +13,6 @@ fn main() {
             Err(e) => eprintln!("Couldn't read annotations: {}", e),
         }
     } else {
-        metadata::annotate(&args.join(" "));
+        let _ = metadata::annotate(&args.join(" "));
     }
 }
