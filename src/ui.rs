@@ -1,7 +1,8 @@
 use crate::annotation::Annotation;
 
-use cursive::view::Scrollable;
+use cursive::view::{Nameable, Resizable, Scrollable};
 use cursive::views::{Dialog, LinearLayout, SelectView, TextView};
+use cursive::Cursive;
 
 /// Creates a well-formatted string suitable for presentation within the annotation layout.
 ///
@@ -38,6 +39,28 @@ pub fn build_annotation_text(annotation: &Annotation) -> String {
         annotation.format_created_at(),
         annotation.content
     )
+}
+
+fn on_submit_annotation(s: &mut Cursive, _content: &String) {
+    let dialog = Dialog::new()
+        .title("Annotation")
+        .button("Ok", |s| {
+            // Close the dialog.
+            s.pop_layer();
+        })
+        .button("Remove", |s| {
+            s.call_on_name("annotation_list", |view: &mut SelectView| {
+                // Ensure an item is selected before removing it.
+                if let Some(selected_id) = view.selected_id() {
+                    view.remove_item(selected_id);
+                }
+            });
+
+            // Close the dialog.
+            s.pop_layer();
+        });
+
+    s.add_layer(dialog);
 }
 
 /// Builds the annotation layout for displaying a list of annotations.
@@ -83,9 +106,14 @@ pub fn build_annotations_layout(annotations: &[Annotation]) -> Dialog {
         )
         .title("Annotations")
     } else {
-        let select_view = annotations.iter().fold(SelectView::new(), |select_view, annotation| {
-            select_view.item_str(build_annotation_text(annotation))
-        });
+        let select_view = annotations
+            .iter()
+            .fold(SelectView::new(), |select_view, annotation| {
+                select_view.item_str(build_annotation_text(annotation))
+            })
+            .on_submit(on_submit_annotation)
+            .with_name("annotation_list");
+
         Dialog::around(select_view.scrollable()).title("Annotations")
     }
 }
@@ -123,3 +151,4 @@ pub fn run_annotate_tui(annotations: Vec<Annotation>) {
     siv.add_layer(build_annotations_layout(&annotations));
     siv.run();
 }
+
