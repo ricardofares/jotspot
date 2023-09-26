@@ -177,6 +177,6 @@ pub fn read_annotations_file() -> io::Result<Vec<String>> {
         .read(true)
         .open(get_annotations_filename())?;
 
-    let lines: Vec<String> = BufReader::new(file).lines().collect();
-    Ok(lines)
+    let lines: Result<Vec<String>, io::Error> = BufReader::new(file).lines().collect();
+    Ok(lines?)
 }

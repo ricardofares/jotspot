@@ -1,4 +1,4 @@
-use chrono::{DateTime, Duration, Local, Utc};
+use chrono::{TimeZone, Local, Utc};
 use std::fmt::{self, Display, Formatter};
 
 /// Represents an annotation with content and a timestamp.
@@ -42,7 +42,7 @@ impl Annotation {
     /// println!("Created: {}", formatted_time); // Prints a formatted timestamp difference.
     /// ```
     pub fn format_created_at(&self) -> String {
-        let timestamp = Utc.timestamp_millis(self.created_at as i64);
+        let timestamp = Utc.timestamp_millis_opt(self.created_at as i64).unwrap();
         let now = Local::now().naive_local();
         let duration = now.signed_duration_since(timestamp.naive_local());
 
