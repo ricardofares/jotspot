@@ -105,4 +105,3 @@ impl Display for Annotation {
         write!(f, "({}, {})", self.created_at, self.content)
     }
 }
-
