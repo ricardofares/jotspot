@@ -148,6 +148,15 @@ pub fn read_annotations() -> io::Result<Vec<Annotation>> {
     Ok(annotations)
 }
 
+/// Saves a collection of annotations to a file.
+///
+/// # Arguments
+///
+/// - `data`: A reference to an [`AnnotationsData`] struct containing the annotations to be saved.
+///
+/// # Panics
+///
+/// This function may panic if it encounters errors while opening or writing to the file.
 pub fn save_annotations(data: &AnnotationsData) {
     let mut file = OpenOptions::new()
         .create(true)
