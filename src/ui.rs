@@ -1,6 +1,7 @@
-use crate::annotation::Annotation;
+use crate::annotation::{Annotation, AnnotationsData};
+use crate::metadata;
 
-use cursive::view::{Nameable, Resizable, Scrollable};
+use cursive::view::{Nameable, Scrollable};
 use cursive::views::{Dialog, LinearLayout, SelectView, TextView};
 use cursive::Cursive;
 
@@ -49,12 +50,18 @@ fn on_submit_annotation(s: &mut Cursive, _content: &String) {
             s.pop_layer();
         })
         .button("Remove", |s| {
-            s.call_on_name("annotation_list", |view: &mut SelectView| {
-                // Ensure an item is selected before removing it.
-                if let Some(selected_id) = view.selected_id() {
-                    view.remove_item(selected_id);
-                }
-            });
+            let mut select_view = s
+                .find_name::<SelectView>("annotation_list")
+                .expect("It there must be a select view named `annotation_list`");
+
+            let data = s
+                .user_data::<AnnotationsData>()
+                .expect("It there must be a user data");
+
+            if let Some(selected_id) = select_view.selected_id() {
+                select_view.remove_item(selected_id);
+                data.get_annotations_mut().remove(selected_id);
+            }
 
             // Close the dialog.
             s.pop_layer();
@@ -147,8 +154,11 @@ pub fn build_annotations_layout(annotations: &[Annotation]) -> Dialog {
 /// ```
 pub fn run_annotate_tui(annotations: Vec<Annotation>) {
     let mut siv = cursive::default();
+    let annotations_layout = build_annotations_layout(&annotations);
 
-    siv.add_layer(build_annotations_layout(&annotations));
+    siv.set_user_data(AnnotationsData::new(annotations));
+    siv.add_layer(annotations_layout);
     siv.run();
-}
 
+    metadata::save_annotations(siv.user_data().expect("It there must be a data"));
+}

@@ -1,4 +1,4 @@
-use crate::annotation::Annotation;
+use crate::annotation::{Annotation, AnnotationsData};
 
 use std::env;
 use std::fs::OpenOptions;
@@ -142,4 +142,17 @@ pub fn read_annotations() -> io::Result<Vec<Annotation>> {
     let annotations = lines.lines().map(|line| Annotation::from(line)).collect();
 
     Ok(annotations)
+}
+
+pub fn save_annotations(data: &AnnotationsData) {
+    let mut file = OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .open(get_annotations_filename())
+        .expect("Couldn't open the file");
+
+    for annotation in data.get_annotations() {
+        writeln!(file, "{} {}", annotation.created_at, annotation.content);
+    }
 }

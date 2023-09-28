@@ -13,6 +13,24 @@ pub struct Annotation {
     pub created_at: u64,
 }
 
+pub struct AnnotationsData {
+    annotations: Vec<Annotation>,
+}
+
+impl AnnotationsData {
+    pub fn new(annotations: Vec<Annotation>) -> Self {
+        Self { annotations }
+    }
+
+    pub fn get_annotations(&self) -> &Vec<Annotation> {
+        &self.annotations
+    }
+
+    pub fn get_annotations_mut(&mut self) -> &mut Vec<Annotation> {
+        &mut self.annotations
+    }
+}
+
 impl Annotation {
     /// Formats the timestamp difference between the current time and the `created_at` timestamp
     /// as a human-readable string.
