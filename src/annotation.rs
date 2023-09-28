@@ -110,7 +110,7 @@ impl Annotation {
     pub fn new(content: &str) -> Self {
         Self {
             content: content.to_string(),
-            created_at: Local::now().timestamp() as u64,
+            created_at: Local::now().timestamp_millis() as u64,
         }
     }
 

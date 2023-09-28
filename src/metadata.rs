@@ -4,7 +4,6 @@ use std::env;
 use std::fs::OpenOptions;
 use std::io::{self, Read, Write};
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Get the annotations metadata file path.
 ///
@@ -79,12 +78,10 @@ pub fn annotate(content: &str) -> io::Result<()> {
         .append(true)
         .open(get_annotations_filename())?;
 
-    let created_at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("Invalid system time!")
-        .as_millis();
+    let annotation = Annotation::new(content);
 
-    writeln!(file, "{} {}", created_at, content)?;
+    writeln!(file, "{} {}", annotation.created_at, annotation.content)?;
+
     Ok(())
 }
 

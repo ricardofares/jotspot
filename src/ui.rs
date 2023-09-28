@@ -1,8 +1,6 @@
 use crate::annotation::{Annotation, AnnotationsData};
 use crate::metadata;
 
-use cursive::theme::{Effect, Style};
-use cursive::utils::markup::StyledString;
 use cursive::view::{Nameable, Scrollable};
 use cursive::views::{Dialog, LinearLayout, SelectView, TextView};
 use cursive::Cursive;
