@@ -13,25 +13,107 @@ pub struct Annotation {
     pub created_at: u64,
 }
 
+/// Data structure for storing and managing annotations.
+///
+/// [`AnnotationsData`] is a container for holding a collection of [`Annotation`] objects.
 pub struct AnnotationsData {
+    /// A collection of annotations.
     annotations: Vec<Annotation>,
 }
 
 impl AnnotationsData {
+    /// Creates a new [`AnnotationsData`] instance with an initial list of annotations.
+    ///
+    /// # Arguments
+    ///
+    /// - `annotations`: A [`Vec`] of [`Annotation`] objects to initialize the data with.
+    ///
+    /// # Returns
+    ///
+    /// A new [`AnnotationsData`] instance containing the provided annotations.
+    ///
+    /// ## Examples
+    ///
+    /// ```
+    /// // Create an AnnotationsData instance with initial annotations.
+    /// let annotations = vec![
+    ///     Annotation::new("First annotation"),
+    ///     Annotation::new("Second annotation"),
+    /// ];
+    /// let mut annotations_data = AnnotationsData::new(annotations);
+    /// ```
     pub fn new(annotations: Vec<Annotation>) -> Self {
         Self { annotations }
     }
 
+    /// Retrieves a reference to the list of annotations.
+    ///
+    /// # Returns
+    ///
+    /// An immutable reference to the internal [`Vec`] of [`Annotation`] objects.
+    ///
+    /// ## Examples
+    ///
+    /// ```
+    /// // Create an AnnotationsData instance with initial annotations.
+    /// let annotations = vec![
+    ///     Annotation::new("First annotation"),
+    ///     Annotation::new("Second annotation"),
+    /// ];
+    /// let annotations_data = AnnotationsData::new(annotations);
+    ///
+    /// // Retrieve all annotations.
+    /// let all_annotations = annotations_data.get_annotations();
+    /// ```
     pub fn get_annotations(&self) -> &Vec<Annotation> {
         &self.annotations
     }
 
+    /// Retrieves a mutable reference to the list of annotations.
+    ///
+    /// # Returns
+    ///
+    /// A mutable reference to the internal [`Vec`] of [`Annotation`] objects, allowing
+    /// modifications to the annotations.
+    ///
+    /// ## Examples
+    ///
+    /// ```
+    /// // Create an AnnotationsData instance with initial annotations.
+    /// let annotations = vec![
+    ///     Annotation::new("First annotation"),
+    ///     Annotation::new("Second annotation"),
+    /// ];
+    /// let mut annotations_data = AnnotationsData::new(annotations);
+    ///
+    /// // Retrieve the mutable reference to annotations and modify them.
+    /// let mut mutable_annotations = annotations_data.get_annotations_mut();
+    /// ```
     pub fn get_annotations_mut(&mut self) -> &mut Vec<Annotation> {
         &mut self.annotations
     }
 }
 
 impl Annotation {
+    /// Creates a new annotation with the given content.
+    ///
+    /// This function generates a new annotation instance with the provided content and sets
+    /// the `created_at` timestamp to the current local time.
+    ///
+    /// # Arguments
+    ///
+    /// - `content`:  The content of the annotation.
+    ///
+    /// # Returns
+    ///
+    /// A new [`Annotation`] instance.
+    pub fn new(content: &str) -> Self {
+        Self {
+            content: content.to_string(),
+            created_at: Local::now().timestamp() as u64,
+        }
+    }
+
     /// Formats the timestamp difference between the current time and the `created_at` timestamp
     /// as a human-readable string.
     ///
