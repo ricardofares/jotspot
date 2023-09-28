@@ -44,6 +44,16 @@ pub fn build_annotation_text(annotation: &Annotation) -> String {
     )
 }
 
+/// Handles the submission of an annotation.
+///
+/// This function is called when a user submits an annotation. It displays a dialog box with
+/// options to either remove the submitted annotation or keep it. If the user chooses to remove
+/// the annotation, it is removed from the list and the metadata is updated accordingly.
+///
+/// # Arguments
+///
+/// - `s`: A mutable reference to the [`Cursive`] instance.
+/// - `_content`: A reference to the content of the submitted annotation (not used in this function).
 fn on_submit_annotation(s: &mut Cursive, _content: &String) {
     let dialog = Dialog::text("Would you like to remove the annotation?")
         .title("Annotation")
