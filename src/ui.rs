@@ -1,6 +1,8 @@
 use crate::annotation::{Annotation, AnnotationsData};
 use crate::metadata;
 
+use cursive::theme::{Effect, Style};
+use cursive::utils::markup::StyledString;
 use cursive::view::{Nameable, Scrollable};
 use cursive::views::{Dialog, LinearLayout, SelectView, TextView};
 use cursive::Cursive;
@@ -43,13 +45,13 @@ pub fn build_annotation_text(annotation: &Annotation) -> String {
 }
 
 fn on_submit_annotation(s: &mut Cursive, _content: &String) {
-    let dialog = Dialog::new()
+    let dialog = Dialog::text("Would you like to remove the annotation?")
         .title("Annotation")
-        .button("Ok", |s| {
+        .button("No", |s| {
             // Close the dialog.
             s.pop_layer();
         })
-        .button("Remove", |s| {
+        .button("Yes", |s| {
             let mut select_view = s
                 .find_name::<SelectView>("annotation_list")
                 .expect("It there must be a select view named `annotation_list`");
