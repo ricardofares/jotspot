@@ -166,6 +166,7 @@ pub fn run_annotate_tui(annotations: Vec<Annotation>) {
     let mut siv = cursive::default();
     let annotations_layout = build_annotations_layout(&annotations);
 
+    siv.add_global_callback('q', |s| s.quit());
     siv.set_user_data(AnnotationsData::new(annotations));
     siv.add_layer(annotations_layout);
     siv.run();
