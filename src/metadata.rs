@@ -139,7 +139,11 @@ pub fn read_annotations() -> io::Result<Vec<Annotation>> {
         .open(get_annotations_filename())?
         .read_to_string(&mut lines)?;
 
-    let annotations = lines.lines().map(|line| Annotation::from(line)).collect();
+    let annotations = lines
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(|line| Annotation::from(line))
+        .collect();
 
     Ok(annotations)
 }
@@ -152,7 +156,11 @@ pub fn save_annotations(data: &AnnotationsData) {
         .open(get_annotations_filename())
         .expect("Couldn't open the file");
 
+    let mut content = String::new();
+
     for annotation in data.get_annotations() {
-        writeln!(file, "{} {}", annotation.created_at, annotation.content);
+        content.push_str(format!("{} {}\n", annotation.created_at, annotation.content).as_str());
     }
+
+    writeln!(file, "{}", content).expect("Couldn't write to the file");
 }
