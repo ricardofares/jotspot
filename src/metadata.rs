@@ -139,7 +139,11 @@ pub fn read_annotations() -> io::Result<Vec<Annotation>> {
         .open(get_annotations_filename())?
         .read_to_string(&mut lines)?;
 
-    let annotations = lines.lines().map(|line| Annotation::from(line)).collect();
+    let annotations = lines
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(|line| Annotation::from(line))
+        .collect();
 
     Ok(annotations)
 }
